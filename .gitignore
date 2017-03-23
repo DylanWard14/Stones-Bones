@@ -61,5 +61,5 @@ Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-BuildingEscape/Content/StarterContent/Textures
-BuildingEscape/Content/StarterContent/HDRI
+SkellyDefense/Content/StarterContent/Textures
+SkellyDefense/Content/StarterContent/HDRI
