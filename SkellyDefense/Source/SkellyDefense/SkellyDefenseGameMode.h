@@ -23,7 +23,7 @@ public:
 	TArray<AActor*> Spawns;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<ABasicEnemy> EnemyBP;
+	TArray<TSubclassOf<ABasicEnemy>> EnemyBP;
 
 	FTimerHandle SpawnTimerHandle;
 

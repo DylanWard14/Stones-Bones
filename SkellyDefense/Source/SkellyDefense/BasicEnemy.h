@@ -23,8 +23,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:
-
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	float Health = 100;
 
@@ -47,4 +45,10 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "AI")
 	int32 WallIndex;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+	bool Slowed;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+	float SlowedTimer;
 };

@@ -145,7 +145,10 @@ void ASkellyDefenseGameMode::SpawnEnemy()
 
 		auto SpawnPosition = Spawns[SpawnIndex]->GetActorLocation();
 		auto SpawnRotation = Spawns[SpawnIndex]->GetActorRotation();
-		AActor* SpawnedEnemy = GetWorld()->SpawnActor<ABasicEnemy>(EnemyBP, SpawnPosition, SpawnRotation);
+
+		int EnemyToSpawn = FMath::RandRange(0, (EnemyBP.Num() - 1));
+
+		AActor* SpawnedEnemy = GetWorld()->SpawnActor<ABasicEnemy>(EnemyBP[EnemyToSpawn], SpawnPosition, SpawnRotation);
 		ABasicEnemy* Enemy = Cast<ABasicEnemy>(SpawnedEnemy);
 
 		if (Spawns[SpawnIndex]->ActorHasTag("North")) //TODO turn into function
