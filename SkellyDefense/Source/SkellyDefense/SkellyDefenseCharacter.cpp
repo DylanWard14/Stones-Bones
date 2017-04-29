@@ -297,7 +297,7 @@ void ASkellyDefenseCharacter::OnFire_Implementation()
 						DamagedComponent->AddImpulseAtLocation(ShootDir*WeaponDamage, Impact.Location);
 				}
 
-				if (DamagedActor != NULL)
+				if (DamagedActor != NULL && DamagedActor->ActorHasTag("Enemy"))
 				{
 					UGameplayStatics::ApplyDamage(DamagedActor, DamageOutput, GetInstigatorController(), this, UDamageType::StaticClass());
 				}

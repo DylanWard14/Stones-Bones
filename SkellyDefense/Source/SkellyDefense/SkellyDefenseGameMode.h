@@ -50,9 +50,6 @@ public:
 	TArray <AWall*> EastWalls;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray <AWall*> SouthWalls;
-
-	UPROPERTY(BlueprintReadWrite)
 	TArray <AWall*> WestWalls;
 
 	UFUNCTION(BlueprintCallable, Category = "Wall")
@@ -60,6 +57,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool GameOver = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Ready = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool WallDestroyed = false;
 
 protected: 
 	virtual void InitGameState() override;

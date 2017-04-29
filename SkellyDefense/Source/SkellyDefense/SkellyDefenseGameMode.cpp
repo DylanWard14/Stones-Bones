@@ -33,6 +33,8 @@ void ASkellyDefenseGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	UWorld* const World = GetWorld();
+	Ready = false;
+	WallDestroyed = false;
 	if (World)
 	{
 		GameOver = false;
@@ -67,18 +69,16 @@ void ASkellyDefenseGameMode::BeginPlay()
 				UE_LOG(LogTemp, Warning, TEXT("East wall added"));
 			}
 
-			else if (Wall->ActorHasTag("SouthWall"))
-			{
-				AWall* ThisWall = Cast<AWall>(Wall);
-				SouthWalls.Add(ThisWall);
-				UE_LOG(LogTemp, Warning, TEXT("South wall added"));
-			}
-
 			else if (Wall->ActorHasTag("WestWall"))
 			{
 				AWall* ThisWall = Cast<AWall>(Wall);
 				WestWalls.Add(ThisWall);
 				UE_LOG(LogTemp, Warning, TEXT("West wall added"));
+			}
+
+			else if (Wall->ActorHasTag("SouthWall"))
+			{
+
 			}
 		}
 		
@@ -137,7 +137,7 @@ void ASkellyDefenseGameMode::CalculateEnemiesRemaining(float Amount)
 //Spawns an enemy at a random spawn position
 void ASkellyDefenseGameMode::SpawnEnemy()
 {
-	if (EnemiesSpawned < EnemiesToSpawn && EnemiesRemaining > 0)
+	if (Ready && EnemiesSpawned < EnemiesToSpawn && EnemiesRemaining > 0)
 	{
 		int SpawnIndex = FMath::RandRange(0, (Spawns.Num() - 1));
 		UE_LOG(LogTemp, Warning, TEXT("%i"), SpawnIndex);
@@ -145,40 +145,44 @@ void ASkellyDefenseGameMode::SpawnEnemy()
 
 		auto SpawnPosition = Spawns[SpawnIndex]->GetActorLocation();
 		auto SpawnRotation = Spawns[SpawnIndex]->GetActorRotation();
+		int EnemyToSpawn = 0;
 
-		int EnemyToSpawn = FMath::RandRange(0, (EnemyBP.Num() - 1));
+		if (WallDestroyed) //TODO Change to allow only explosive enemies to spawn on side of destroyed wall
+			EnemyToSpawn = FMath::RandRange(0, (EnemyBP.Num() - 1));
+		else
+			EnemyToSpawn = FMath::RandRange(0, (EnemyBP.Num() - 2));
 
 		AActor* SpawnedEnemy = GetWorld()->SpawnActor<ABasicEnemy>(EnemyBP[EnemyToSpawn], SpawnPosition, SpawnRotation);
 		ABasicEnemy* Enemy = Cast<ABasicEnemy>(SpawnedEnemy);
 
-		if (Spawns[SpawnIndex]->ActorHasTag("North")) //TODO turn into function
+		if (Spawns[SpawnIndex]->ActorHasTag("North") && !Enemy->ActorHasTag("Explosive")) //TODO turn into function
 		{
 			Enemy->AttackNorth();
 			Enemy->WallIndex = FMath::RandRange(0, (NorthWalls.Num() - 1));
 		}
 
-		else if (Spawns[SpawnIndex]->ActorHasTag("East"))
+		else if (Spawns[SpawnIndex]->ActorHasTag("East") && !Enemy->ActorHasTag("Explosive"))
 		{
 			Enemy->AttackEast();
 			Enemy->WallIndex = FMath::RandRange(0, (EastWalls.Num() - 1));
 		}
-		else if (Spawns[SpawnIndex]->ActorHasTag("South"))
-		{
-			Enemy->AttackSouth();
-			Enemy->WallIndex = FMath::RandRange(0, (SouthWalls.Num() - 1));
-		}
-		else if (Spawns[SpawnIndex]->ActorHasTag("West"))
+		else if (Spawns[SpawnIndex]->ActorHasTag("West") && !Enemy->ActorHasTag("Explosive"))
 		{
 			Enemy->AttackWest();
 			Enemy->WallIndex = FMath::RandRange(0, (WestWalls.Num() - 1));
+		}
+		else if (Enemy->ActorHasTag("Explosive"))
+		{
+			Enemy->AttackPlayer();
 		}
 		
 		//GetWorld()->SpawnActor<ABasicEnemy>(EnemyBP, SpawnPosition, SpawnRotation);
 		EnemiesSpawned++;
 		UE_LOG(LogTemp, Warning, TEXT("Enemies Spawned = %i"), EnemiesSpawned);
 		UpdateHUD();
-		GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &ASkellyDefenseGameMode::SpawnEnemy, 2.0f, false);
+		
 	}
+	GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &ASkellyDefenseGameMode::SpawnEnemy, 2.0f, false);
 }
 
 // checks to see if all the enemies have been killed and increases the wave accordingly

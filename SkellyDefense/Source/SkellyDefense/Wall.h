@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "Wall.generated.h"
 
+class ASkellyDefenseGameMode;
+
 UCLASS()
 class SKELLYDEFENSE_API AWall : public AActor
 {
@@ -36,5 +38,7 @@ private:
 
 	UFUNCTION()
 	void OnTakeDamage(float Damage);
+
+	ASkellyDefenseGameMode* GameMode;
 	
 };

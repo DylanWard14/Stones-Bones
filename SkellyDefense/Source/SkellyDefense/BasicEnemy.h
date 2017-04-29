@@ -23,7 +23,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float Health = 100;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)override;
@@ -42,6 +42,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
 	void AttackWest();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
+	void AttackPlayer();
 	
 	UPROPERTY(BlueprintReadOnly, Category = "AI")
 	int32 WallIndex;
@@ -51,4 +54,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 	float SlowedTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float AttackRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
+	float AttackDamage;
 };

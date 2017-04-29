@@ -3,6 +3,7 @@
 #include "SkellyDefense.h"
 #include "Wall.h"
 #include "Net/UnrealNetwork.h"
+#include "SkellyDefenseGameMode.h"
 
 // Sets default values
 AWall::AWall()
@@ -16,6 +17,7 @@ AWall::AWall()
 void AWall::BeginPlay()
 {
 	Super::BeginPlay();
+	GameMode = Cast<ASkellyDefenseGameMode>(GetWorld()->GetAuthGameMode());
 	
 }
 
@@ -34,6 +36,12 @@ void AWall::CheckDestroyWall()
 	{
 		this->SetActorEnableCollision(false);
 		this->SetActorHiddenInGame(true);
+		
+		if (HasAuthority())
+		{
+			if (GameMode->WallDestroyed == false)
+				GameMode->WallDestroyed = true;
+		}
 		//Destroy();
 	}
 }
