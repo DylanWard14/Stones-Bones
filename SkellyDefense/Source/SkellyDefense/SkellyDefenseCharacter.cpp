@@ -195,6 +195,7 @@ void ASkellyDefenseCharacter::SetupPlayerInputComponent(class UInputComponent* P
 void ASkellyDefenseCharacter::StartReload_Implementation()
 {
 	GetWorldTimerManager().SetTimer(ReloadTimer, this, &ASkellyDefenseCharacter::Reload, ReloadDelay, false);
+	Reloading = true;
 }
 
 bool ASkellyDefenseCharacter::StartReload_Validate()
@@ -209,6 +210,7 @@ void ASkellyDefenseCharacter::Reload_Implementation()
 			////ReloadTimer += DeltaSeconds;
 			//if (ReloadTimer >= ReloadDelay)
 			//{
+				Reloading = false;
 				CurrentAmmo = MaxAmmo;
 			//	Reloading = false;
 			//}
@@ -233,7 +235,7 @@ void ASkellyDefenseCharacter::OnLeftMouseUp()
 
 void ASkellyDefenseCharacter::OnFirePlayAnim()
 {
-		if (CanShoot)
+		if (!isDead && CanShoot)
 		{
 			// Play a sound if there is one
 			if (FireSound != NULL)
@@ -257,7 +259,7 @@ void ASkellyDefenseCharacter::OnFirePlayAnim()
 
 void ASkellyDefenseCharacter::OnFire_Implementation()
 {
-		if (CanShoot)
+		if (!isDead && CanShoot)
 		{
 			if (!bShootsProjectile)
 			{
@@ -352,12 +354,12 @@ void ASkellyDefenseCharacter::Tick(float DeltaTime)
 
 	ShootTimer += DeltaTime;
 
-	if (ShootTimer >= FireDelay && CanShoot == false && CurrentAmmo > 0)
+	if (ShootTimer >= FireDelay && CanShoot == false && CurrentAmmo > 0 && !Reloading)
 	{
 		ShootTimer = FireDelay;
 		CanShoot = true;
 	}
-	else if (ShootTimer < FireDelay || CurrentAmmo < 0)
+	else if (ShootTimer < FireDelay || CurrentAmmo < 0 || Reloading)
 	{
 		CanShoot = false;
 	}
@@ -368,7 +370,42 @@ void ASkellyDefenseCharacter::Tick(float DeltaTime)
 		OnFirePlayAnim();
 	}
 
+	CheckIfDead(DeltaTime);
+
 	//Reload(DeltaTime);
+}
+
+void ASkellyDefenseCharacter::CheckIfDead(float DeltaTime)
+{
+	if (Health <= 0)
+	{
+		isDead = true;
+		SetActorEnableCollision(false);
+		SetActorHiddenInGame(true);
+		if (!Respawning)
+		{
+			Respawning = true;
+			respawnTimer = 0;
+		}
+		respawnTimer += DeltaTime;
+
+		if (respawnTimer >= 30)
+		{
+			Health = 100;
+		}
+	}
+	else
+	{
+		if (isDead && Respawning)
+		{
+			isDead = false;
+			Respawning = false;
+			SetActorEnableCollision(true);
+			SetActorHiddenInGame(false);
+			FVector spawnLocation = FVector(0, 0, 260);
+			SetActorLocation(spawnLocation);
+		}
+	}
 }
 
 FHitResult ASkellyDefenseCharacter::WeaponTrace(const FVector& StartTrace, const FVector& EndTrace) const
@@ -460,7 +497,7 @@ void ASkellyDefenseCharacter::EndTouch(const ETouchIndex::Type FingerIndex, cons
 
 void ASkellyDefenseCharacter::MoveForward(float Value)
 {
-	if (Value != 0.0f)
+	if (!isDead && Value != 0.0f)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorForwardVector(), Value);
@@ -469,7 +506,7 @@ void ASkellyDefenseCharacter::MoveForward(float Value)
 
 void ASkellyDefenseCharacter::MoveRight(float Value)
 {
-	if (Value != 0.0f)
+	if (!isDead && Value != 0.0f)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);

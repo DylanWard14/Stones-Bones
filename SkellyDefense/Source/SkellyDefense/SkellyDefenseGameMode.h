@@ -39,7 +39,7 @@ public:
 
 	int EnemiesToSpawn;
 
-	int EnemiesRemaining = 11;
+	int EnemiesRemaining = 13;
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void UpdateHUD();
 

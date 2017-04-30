@@ -40,7 +40,9 @@ void ASkellyDefenseGameMode::BeginPlay()
 		GameOver = false;
 		CurrentWave = 1;
 		TheGameState->CurrentWave = this->CurrentWave;
-		EnemiesToSpawn = CurrentWave + 10;
+		EnemiesToSpawn = CurrentWave + 12;
+		EnemiesRemaining = EnemiesToSpawn;
+		//CalculateEnemiesRemaining(EnemiesToSpawn);
 
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawnPoint::StaticClass(), Spawns);
 		UE_LOG(LogTemp, Warning, TEXT("Being play"));
@@ -192,7 +194,7 @@ void ASkellyDefenseGameMode::CheckIncreaseWave()
 	{
 		CurrentWave++;
 		TheGameState->CurrentWave = this->CurrentWave;
-		EnemiesToSpawn = CurrentWave + 10;
+		EnemiesToSpawn = CurrentWave + 12;
 		EnemiesSpawned = 0;
 		CalculateEnemiesRemaining(EnemiesToSpawn);
 		UpdateHUD();

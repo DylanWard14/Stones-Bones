@@ -77,7 +77,7 @@ public:
 	UFUNCTION()
 	void OnTakeDamage(float Damage);
 
-
+	bool isDead = false;
 
 	bool Reloading = false;
 
@@ -189,6 +189,12 @@ protected:
 	void EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
 	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
 	TouchData	TouchItem;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool Respawning = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	float respawnTimer = 0;
 	
 protected:
 	// APawn interface
@@ -209,5 +215,8 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+private:
+
+	void CheckIfDead(float DeltaTime);
 };
 
