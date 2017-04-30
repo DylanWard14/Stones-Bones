@@ -14,6 +14,22 @@ void AEngineer::BeginPlay()
 void AEngineer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (Health > 0 && !canDestroyTurrets)
+	{
+		canDestroyTurrets = true;
+	}
+	else if (Health <= 0 && canDestroyTurrets)
+	{
+		for (int i = 0; i < SpawnedTurrets.Num(); i++)
+		{
+			SpawnedTurrets[i]->Destroy();
+		}
+		SpawnedTurrets.Empty();
+		
+		canDestroyTurrets = false;
+		TurretsSpawned = 0;
+	}
 }
 
 void AEngineer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -30,6 +46,7 @@ void AEngineer::FirstAbility_Implementation()
 		TurretsSpawned++;
 		FVector spawnLocation = GetActorLocation() + (GetActorForwardVector() * 200);
 		AActor* spawnedActor = GetWorld()->SpawnActor<ATurret>(turret, spawnLocation, GetActorRotation());
+		SpawnedTurrets.Add(spawnedActor);
 		ATurret* spawnedTurret = Cast<ATurret>(spawnedActor);
 		spawnedTurret->SetOwningPlayer(this);
 	}

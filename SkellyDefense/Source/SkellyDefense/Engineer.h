@@ -34,6 +34,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 TurretsSpawned;
 
+	UPROPERTY(BlueprintReadWrite)
+	TArray<AActor*> SpawnedTurrets;
+
+	bool canDestroyTurrets = true;
+
 protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
